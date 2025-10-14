@@ -4,13 +4,6 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
-  // 添加安全头信息
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';");
-  
   // 处理 OPTIONS 预检请求
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -38,7 +31,7 @@ export default async function handler(req, res) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADX Google API 代理服务</title>
+    <title>Advertising Report API 代理服务</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -181,11 +174,8 @@ export default async function handler(req, res) {
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔌 ADX Google API 代理服务</h1>
+            <h1>🔌 Advertising Report API 代理服务</h1>
             <p>数据转接服务 - 代理外部 API 数据请求</p>
-            <div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 10px; border-radius: 6px; margin-top: 15px; font-size: 14px;">
-                <strong>⚠️ 重要说明：</strong> 本站点是独立的第三方 API 代理服务，与 Google Inc. 无任何关联。本服务仅用于数据转接，不代表或隶属于 Google 公司。
-            </div>
         </div>
 
         <div class="section">
@@ -193,7 +183,7 @@ export default async function handler(req, res) {
             <p>本服务提供 Google AdX 数据的代理访问功能，将您的请求转发到数据源 API 并返回结果。</p>
             
             <h3 style="margin-top: 20px;">接口地址</h3>
-            <div class="code-block">GET ${req.headers.host ? `https://${req.headers.host}` : 'https://adx-google.com'}/api</div>
+            <div class="code-block">GET ${req.headers.host ? `https://${req.headers.host}` : 'https://advertisingreport.net'}/api</div>
         </div>
 
         <div class="section">
@@ -266,7 +256,7 @@ export default async function handler(req, res) {
 
         <div class="section">
             <h2>💡 使用示例</h2>
-            <div class="code-block">curl "${req.headers.host ? `https://${req.headers.host}` : 'https://adx-google.com'}/api?username=your_username&password=your_password&from_date=2025-10-07&to_date=2025-10-14"</div>
+            <div class="code-block">curl "${req.headers.host ? `https://${req.headers.host}` : 'https://advertisingreport.net'}/api?username=your_username&password=your_password&from_date=2025-10-07&to_date=2025-10-14"</div>
         </div>
 
         <div class="section">
@@ -366,7 +356,7 @@ export default async function handler(req, res) {
     const response = await fetch(targetUrl.toString(), {
       method: 'GET',
       headers: {
-        'User-Agent': 'ADX-Google-Proxy/1.0',
+        'User-Agent': 'Advertising-Report-Proxy/1.0',
         'Accept': 'application/json',
       }
     });
@@ -391,7 +381,7 @@ export default async function handler(req, res) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API 结果 - ADX Google</title>
+    <title>API 结果 - Advertising Report</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
         .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
@@ -415,7 +405,7 @@ export default async function handler(req, res) {
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 ADX Google API 结果</h1>
+            <h1>📊 Advertising Report API 结果</h1>
             <p>数据获取时间: ${new Date().toLocaleString('zh-CN')}</p>
         </div>
         
@@ -498,7 +488,7 @@ export default async function handler(req, res) {
     }
     
     // 对于 API 请求，返回 JSON 数据
-    res.setHeader('X-Proxy-By', 'ADX-Google-Proxy');
+    res.setHeader('X-Proxy-By', 'Advertising-Report-Proxy');
     res.setHeader('X-Data-Source', 'api.adoptima.net');
     res.setHeader('Content-Type', 'application/json');
     

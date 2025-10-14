@@ -1,8 +1,8 @@
-# ADX Google 跳转网站 + API 代理服务
+# Advertising Report 跳转网站 + API 代理服务
 
 这是一个多功能网站，提供两个主要功能：
 
-1. **域名跳转**: 将访问 `adx-google.com` 或 `www.adx-google.com` 的用户自动跳转到 Google Ad Manager
+1. **域名跳转**: 将访问 `advertisingreport.net` 或 `www.advertisingreport.net` 的用户自动跳转到 Google Ad Manager
 2. **API 代理**: 提供 API 数据转接服务，将请求代理到数据源 API
 
 ## 功能特性
@@ -27,7 +27,7 @@
 
 ### 接口地址
 ```
-GET https://adx-google.com/api
+GET https://advertisingreport.net/api
 ```
 
 ### 请求参数
@@ -40,7 +40,7 @@ GET https://adx-google.com/api
 
 ### 请求示例
 ```bash
-curl "https://adx-google.com/api?username=popark&password=Netlink@123&from_date=2025-10-07&to_date=2025-10-14"
+curl "https://advertisingreport.net/api?username=popark&password=Netlink@123&from_date=2025-10-07&to_date=2025-10-14"
 ```
 
 ### 响应格式
@@ -133,12 +133,12 @@ curl "https://adx-google.com/api?username=popark&password=Netlink@123&from_date=
 
 1. 进入项目设置 → Domains
 2. 添加域名:
-   - `adx-google.com`
-   - `www.adx-google.com`
+   - `advertisingreport.net`
+   - `www.advertisingreport.net`
 
 #### 在域名注册商处配置 DNS:
 
-**对于根域名 (adx-google.com):**
+**对于根域名 (advertisingreport.net):**
 ```
 类型: A
 名称: @
@@ -160,10 +160,10 @@ Vercel 会自动为你的域名配置 SSL 证书，通常在几分钟内完成�
 
 部署完成后，可以通过以下方式验证:
 
-1. 访问 `http://adx-google.com` - 应该跳转到 Google Ad Manager
-2. 访问 `http://www.adx-google.com` - 应该跳转到 Google Ad Manager
-3. 访问 `https://adx-google.com` - 应该跳转到 Google Ad Manager
-4. 访问 `https://www.adx-google.com` - 应该跳转到 Google Ad Manager
+1. 访问 `http://advertisingreport.net` - 应该跳转到 Google Ad Manager
+2. 访问 `http://www.advertisingreport.net` - 应该跳转到 Google Ad Manager
+3. 访问 `https://advertisingreport.net` - 应该跳转到 Google Ad Manager
+4. 访问 `https://www.advertisingreport.net` - 应该跳转到 Google Ad Manager
 
 ## 注意事项
 
