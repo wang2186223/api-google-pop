@@ -43,9 +43,7 @@ export default async function handler(req, res) {
       headers: {
         'User-Agent': 'ADX-Google-Proxy/1.0',
         'Accept': 'application/json',
-      },
-      // 设置超时时间
-      signal: AbortSignal.timeout(30000) // 30秒超时
+      }
     });
     
     if (!response.ok) {
@@ -70,11 +68,6 @@ export default async function handler(req, res) {
     
   } catch (error) {
     console.error('Proxy error:', error);
-    
-    // 根据错误类型返回不同的状态码
-    if (error.name === 'AbortError') {
-      return res.status(408).json({ error: 'Request timeout' });
-    }
     
     return res.status(500).json({ 
       error: 'Internal server error',
