@@ -3,14 +3,12 @@
     {
       "source": "/",
       "destination": "https://admanager.google.com",
-      "permanent": true,
-      "statusCode": 301
+      "permanent": true
     },
     {
       "source": "/(.*)",
       "destination": "https://admanager.google.com",
-      "permanent": true,
-      "statusCode": 301
+      "permanent": true
     }
   ],
   "headers": [
