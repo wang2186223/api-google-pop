@@ -4,6 +4,13 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
+  // 添加安全头信息
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';");
+  
   // 处理 OPTIONS 预检请求
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -176,6 +183,9 @@ export default async function handler(req, res) {
         <div class="header">
             <h1>🔌 ADX Google API 代理服务</h1>
             <p>数据转接服务 - 代理外部 API 数据请求</p>
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 10px; border-radius: 6px; margin-top: 15px; font-size: 14px;">
+                <strong>⚠️ 重要说明：</strong> 本站点是独立的第三方 API 代理服务，与 Google Inc. 无任何关联。本服务仅用于数据转接，不代表或隶属于 Google 公司。
+            </div>
         </div>
 
         <div class="section">
