@@ -90,19 +90,6 @@ export default async function handler(req, res) {
     
     // 如果是浏览器请求，返回简化的表格
     if (isBrowserRequest) {
-      // 简单的加密函数（Base64 + 简单混淆）
-      const encryptValue = (value) => {
-        const str = String(value);
-        const encoded = btoa(str).split('').reverse().join('');
-        return encoded.substring(0, 8) + '***';
-      };
-      
-      // 计算汇总数据
-      const totalRevenue = Array.isArray(data) ? data.reduce((sum, item) => sum + parseFloat(item.revenue || 0), 0) : 0;
-      const totalImpressions = Array.isArray(data) ? data.reduce((sum, item) => sum + parseInt(item.impressions || 0), 0) : 0;
-      const totalClicks = Array.isArray(data) ? data.reduce((sum, item) => sum + parseInt(item.clicks || 0), 0) : 0;
-      const totalRequests = Array.isArray(data) ? data.reduce((sum, item) => sum + parseInt(item.ad_request || 0), 0) : 0;
-      
       const htmlResult = `
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -118,12 +105,13 @@ export default async function handler(req, res) {
             color: #333;
         }
         .container { 
-            max-width: 800px; 
+            max-width: 100%; 
             margin: 0 auto; 
             background: white; 
             padding: 30px; 
             border-radius: 8px; 
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto;
         }
         .header { 
             text-align: center; 
@@ -140,30 +128,29 @@ export default async function handler(req, res) {
             color: #666;
             margin-top: 5px;
         }
-        .summary-table { 
+        .data-table { 
             width: 100%; 
             border-collapse: collapse; 
             margin: 20px 0;
             border: 1px solid #dee2e6;
+            font-size: 12px;
         }
-        .summary-table th, .summary-table td { 
+        .data-table th, .data-table td { 
             border: 1px solid #dee2e6; 
-            padding: 12px; 
-            text-align: center;
+            padding: 8px; 
+            text-align: left;
+            white-space: nowrap;
         }
-        .summary-table th { 
+        .data-table th { 
             background: #007bff; 
             color: white;
             font-weight: 600;
+            position: sticky;
+            top: 0;
         }
-        .summary-table td {
-            font-size: 18px;
-            font-weight: 500;
+        .data-table tr:nth-child(even) {
+            background: #f8f9fa;
         }
-        .revenue { color: #28a745; }
-        .impressions { color: #17a2b8; }
-        .clicks { color: #ffc107; }
-        .requests { color: #6c757d; }
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -171,6 +158,13 @@ export default async function handler(req, res) {
             border-top: 1px solid #dee2e6;
             color: #666;
             font-size: 14px;
+        }
+        .record-count {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #007bff;
         }
     </style>
 </head>
@@ -181,40 +175,62 @@ export default async function handler(req, res) {
             <div class="period">Period: ${from_date} - ${to_date}</div>
         </div>
         
-        <table class="summary-table">
+        <div class="record-count">
+            Total Records: ${Array.isArray(data) ? data.length : 0}
+        </div>
+        
+        ${Array.isArray(data) && data.length > 0 ? `
+        <table class="data-table">
             <thead>
                 <tr>
-                    <th>指标</th>
-                    <th>数值</th>
+                    <th>date</th>
+                    <th>site</th>
+                    <th>url</th>
+                    <th>adunit</th>
+                    <th>ad_unit_1</th>
+                    <th>ad_unit_code</th>
+                    <th>clicks</th>
+                    <th>impressions</th>
+                    <th>ecpm</th>
+                    <th>ad_request</th>
+                    <th>responses_served</th>
+                    <th>match_rate</th>
+                    <th>total_active_view_measurable_imp</th>
+                    <th>revenue</th>
+                    <th>country</th>
                 </tr>
             </thead>
             <tbody>
+                ${data.map(item => `
                 <tr>
-                    <td><strong>总收入</strong></td>
-                    <td class="revenue">$${totalRevenue.toFixed(4)}</td>
+                    <td>${item.date || ''}</td>
+                    <td>${item.site || ''}</td>
+                    <td>${item.url || ''}</td>
+                    <td>${item.adunit || ''}</td>
+                    <td>${item.ad_unit_1 || ''}</td>
+                    <td>${item.ad_unit_code || ''}</td>
+                    <td>${item.clicks || ''}</td>
+                    <td>${item.impressions || ''}</td>
+                    <td>${item.ecpm || ''}</td>
+                    <td>${item.ad_request || ''}</td>
+                    <td>${item.responses_served || ''}</td>
+                    <td>${item.match_rate || ''}</td>
+                    <td>${item.total_active_view_measurable_imp || ''}</td>
+                    <td>${item.revenue || ''}</td>
+                    <td>${item.country || ''}</td>
                 </tr>
-                <tr>
-                    <td><strong>总展示数</strong></td>
-                    <td class="impressions">${totalImpressions.toLocaleString()}</td>
-                </tr>
-                <tr>
-                    <td><strong>总点击数</strong></td>
-                    <td class="clicks">${totalClicks.toLocaleString()}</td>
-                </tr>
-                <tr>
-                    <td><strong>总请求数</strong></td>
-                    <td class="requests">${totalRequests.toLocaleString()}</td>
-                </tr>
-                <tr>
-                    <td><strong>数据记录数</strong></td>
-                    <td>${Array.isArray(data) ? data.length : 0}</td>
-                </tr>
+                `).join('')}
             </tbody>
         </table>
+        ` : `
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <h3>📭 No Data</h3>
+            <p>No data found for the specified date range</p>
+        </div>
+        `}
         
         <div class="footer">
-            Report generated at ${new Date().toLocaleString('zh-CN')}<br>
-            Data ID: ${encryptValue(username + from_date + to_date)}
+            Report generated at ${new Date().toLocaleString('zh-CN')}
         </div>
     </div>
 </body>
@@ -224,29 +240,12 @@ export default async function handler(req, res) {
       return res.status(200).send(htmlResult);
     }
     
-    // 对于 API 请求，返回加密后的 JSON 数据
-    const encryptedData = Array.isArray(data) ? data.map(item => ({
-      date: item.date,
-      site_hash: btoa(item.site || '').substring(0, 8),
-      adunit_hash: btoa(item.adunit || '').substring(0, 8),
-      impressions: item.impressions,
-      clicks: item.clicks,
-      revenue: item.revenue
-    })) : [];
-    
+    // 对于 API 请求，返回原始 JSON 数据
     res.setHeader('X-Proxy-By', 'Advertising-Report-Proxy');
     res.setHeader('X-Data-Source', 'api.adoptima.net');
     res.setHeader('Content-Type', 'application/json');
     
-    return res.status(200).json({
-      summary: {
-        total_revenue: encryptedData.reduce((sum, item) => sum + parseFloat(item.revenue || 0), 0),
-        total_impressions: encryptedData.reduce((sum, item) => sum + parseInt(item.impressions || 0), 0),
-        total_clicks: encryptedData.reduce((sum, item) => sum + parseInt(item.clicks || 0), 0),
-        record_count: encryptedData.length
-      },
-      data: encryptedData
-    });
+    return res.status(200).json(data);
     
   } catch (error) {
     console.error('Proxy error:', error);
