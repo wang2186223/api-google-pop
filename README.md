@@ -1,16 +1,80 @@
-# ADX Google 跳转网站
+# ADX Google 跳转网站 + API 代理服务
 
-这是一个简单的网站，用于将访问 `adx-google.com` 或 `www.adx-google.com` 的用户自动跳转到 Google Ad Manager (`https://admanager.google.com`)。
+这是一个多功能网站，提供两个主要功能：
+
+1. **域名跳转**: 将访问 `adx-google.com` 或 `www.adx-google.com` 的用户自动跳转到 Google Ad Manager
+2. **API 代理**: 提供 API 数据转接服务，将请求代理到数据源 API
 
 ## 功能特性
 
-- **自动跳转**: 使用多种方式确保可靠的跳转
+### 🔄 域名跳转功能
+- **自动跳转**: 使用多种方式确保可靠的跳转到 `https://admanager.google.com`
   - HTML meta refresh
   - JavaScript window.location
   - Vercel 301 重定向
 - **双重保障**: 支持 www 和非 www 域名
 - **用户友好**: 显示加载动画和备用链接
 - **SEO 优化**: 使用 301 永久重定向
+
+### 🔌 API 代理功能
+- **数据转接**: 代理外部 API 数据请求
+- **参数转发**: 自动转发查询参数
+- **错误处理**: 完善的错误处理和状态码
+- **CORS 支持**: 支持跨域请求
+- **超时控制**: 30秒请求超时保护
+
+## API 使用说明
+
+### 接口地址
+```
+GET https://adx-google.com/api
+```
+
+### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| username | string | ✅ | 用户名 |
+| password | string | ✅ | 密码 |
+| from_date | string | ✅ | 开始日期 (YYYY-MM-DD) |
+| to_date | string | ✅ | 结束日期 (YYYY-MM-DD) |
+
+### 请求示例
+```bash
+curl "https://adx-google.com/api?username=popark&password=Netlink@123&from_date=2025-10-07&to_date=2025-10-14"
+```
+
+### 响应格式
+返回 JSON 数组，包含广告数据：
+```json
+[
+  {
+    "date": "2025-10-13",
+    "site": "(unknown)",
+    "url": null,
+    "adunit": "banner_1",
+    "ad_unit_1": "poparknovel.com",
+    "ad_unit_code": null,
+    "clicks": "0",
+    "impressions": "0",
+    "ecpm": "0",
+    "ad_request": "22",
+    "responses_served": "0",
+    "match_rate": "0",
+    "total_active_view_measurable_imp": null,
+    "revenue": "0",
+    "country": null
+  }
+]
+```
+
+### 错误响应
+```json
+{
+  "error": "Missing required parameters",
+  "required": ["username", "password", "from_date", "to_date"],
+  "received": { "username": "popark", "password": null, "from_date": "2025-10-07", "to_date": "2025-10-14" }
+}
+```
 
 ## 技术实现
 
@@ -19,6 +83,7 @@
 1. **Vercel 重定向** (主要方式)
    - 使用 `vercel.json` 配置 301 永久重定向
    - 在服务器级别处理，速度最快
+   - 排除 `/api` 路径以支持 API 功能
 
 2. **HTML Meta Refresh** (备用方式)
    - 在 HTML head 中设置 meta refresh
@@ -28,12 +93,24 @@
    - 立即执行和延迟执行双重保障
    - 处理特殊情况
 
+### API 代理实现
+
+- **Vercel Serverless Functions**: 使用 Node.js 20.x 运行时
+- **数据源**: `https://api.adoptima.net/get_app_data/get_adx`
+- **安全特性**: 
+  - CORS 支持
+  - 请求超时控制
+  - 参数验证
+  - 错误处理
+
 ### 文件结构
 
 ```
-├── index.html      # 主页面文件
-├── vercel.json     # Vercel 配置文件
-└── README.md       # 项目说明文档
+├── api/
+│   └── index.js        # API 代理函数
+├── index.html          # 主页面文件
+├── vercel.json         # Vercel 配置文件
+└── README.md           # 项目说明文档
 ```
 
 ## 部署步骤

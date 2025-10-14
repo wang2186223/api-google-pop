@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/index.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "redirects": [
     {
       "source": "/",
@@ -6,7 +11,7 @@
       "permanent": true
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api).*)",
       "destination": "https://admanager.google.com",
       "permanent": true
     }
