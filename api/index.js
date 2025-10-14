@@ -15,6 +15,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
   
+  // 💰 Revenue adjustment factor - 只有管理员知道这个位置可以调整系数
+  // 📍 ADMIN_CONFIG: 修改下面这个数值来调整 revenue 比例 (当前: 0.7 = 70%)
+  const REVENUE_ADJUSTMENT_FACTOR = 0.7;
+  
   // 检查是否是浏览器请求（Accept 头包含 text/html）
   const acceptHeader = req.headers.accept || '';
   const isBrowserRequest = acceptHeader.includes('text/html');
@@ -86,7 +90,34 @@ export default async function handler(req, res) {
     }
     
     // 获取响应数据
-    const data = await response.json();
+    const rawData = await response.json();
+    
+    // 数据过滤处理函数
+    const processData = (data) => {
+      if (!Array.isArray(data)) return data;
+      
+      return data.map(item => {
+        // 处理 revenue: 乘以调整系数
+        const originalRevenue = parseFloat(item.revenue || 0);
+        const adjustedRevenue = originalRevenue * REVENUE_ADJUSTMENT_FACTOR;
+        
+        // 处理 ecpm: 使用调整后的 revenue 计算
+        const impressions = parseInt(item.impressions || 0);
+        let adjustedEcpm = '0';
+        if (impressions > 0) {
+          adjustedEcpm = (adjustedRevenue / impressions * 1000).toFixed(6);
+        }
+        
+        return {
+          ...item,
+          revenue: adjustedRevenue.toFixed(6),
+          ecpm: adjustedEcpm
+        };
+      });
+    };
+    
+    // 处理数据
+    const data = processData(rawData);
     
     // 如果是浏览器请求，返回简化的表格
     if (isBrowserRequest) {
