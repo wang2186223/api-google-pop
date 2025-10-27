@@ -4,6 +4,11 @@
       "source": "/",
       "destination": "https://admanager.google.com",
       "permanent": true
+    },
+    {
+      "source": "/((?!api$).*)",
+      "destination": "https://admanager.google.com",
+      "permanent": true
     }
   ]
 }
