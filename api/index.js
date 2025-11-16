@@ -86,9 +86,12 @@ export default async function handler(req, res) {
     });
     
     if (!response.ok) {
+      const errorText = await response.text();
       return res.status(response.status).json({ 
         error: 'API request failed',
-        status: response.status
+        status: response.status,
+        details: errorText,
+        request: requestBody
       });
     }
     
@@ -97,7 +100,10 @@ export default async function handler(req, res) {
     
     // 检查 API 返回的错误
     if (result.error) {
-      return res.status(500).json({ error: result.error });
+      return res.status(500).json({ 
+        error: result.error,
+        request: requestBody
+      });
     }
     
     const apiData = result.data?.rows || [];
