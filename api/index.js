@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   // API 配置
   const API_URL = 'https://api-prod.adsentri.com/api/gamebridge/v1/ssp/report';
   const API_TOKEN = '2323f8fc81c4941726d7b58fa8614d73';
-  const REVENUE_FACTOR = 0.7;
+  const REVENUE_FACTOR = 0.5;
   
   // 检查是否是浏览器请求
   const acceptHeader = req.headers.accept || '';
@@ -132,17 +132,20 @@ export default async function handler(req, res) {
     const apiData = result.data?.rows || [];
     const totalRows = result.data?.total_rows || {};
     
-    // 数据处理函数 - 调整 NetRevenue 和 ECpm
+    // 数据处理函数 - 调整 GrossRevenue (50%) 和 ECpm，移除 NetRevenue
     const processedData = apiData.map(item => {
       const processed = { ...item };
       
-      // 处理 NetRevenue: 乘以 0.7
-      if (item.NetRevenue) {
-        const originalRevenue = parseFloat(item.NetRevenue);
+      // 删除 NetRevenue 字段
+      delete processed.NetRevenue;
+      
+      // 处理 GrossRevenue: 乘以 50%
+      if (item.GrossRevenue) {
+        const originalRevenue = parseFloat(item.GrossRevenue);
         const adjustedRevenue = originalRevenue * REVENUE_FACTOR;
-        processed.NetRevenue = adjustedRevenue.toFixed(2);
+        processed.GrossRevenue = adjustedRevenue.toFixed(2);
         
-        // 重新计算 ECpm: (调整后的revenue / impressions) * 1000
+        // 重新计算 ECpm: (调整后的GrossRevenue / Impressions) * 1000
         const impressions = parseInt(item.Impressions || 0);
         if (impressions > 0) {
           processed.ECpm = ((adjustedRevenue / impressions) * 1000).toFixed(4);
