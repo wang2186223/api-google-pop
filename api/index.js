@@ -54,6 +54,29 @@ export default async function handler(req, res) {
       });
     }
     
+    // 验证日期格式和有效性
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(start_date) || !dateRegex.test(end_date)) {
+      return res.status(400).json({ 
+        error: 'Invalid date format. Use YYYY-MM-DD (e.g., 2024-01-01)'
+      });
+    }
+    
+    const startDateObj = new Date(start_date);
+    const endDateObj = new Date(end_date);
+    
+    if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
+      return res.status(400).json({ 
+        error: 'Invalid date. Please check the date is valid (e.g., 2025-11-31 is invalid because November has only 30 days)'
+      });
+    }
+    
+    if (startDateObj > endDateObj) {
+      return res.status(400).json({ 
+        error: 'start_date must be earlier than or equal to end_date'
+      });
+    }
+    
     // 构建请求体
     const requestBody = {
       date_range: {
